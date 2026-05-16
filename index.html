@@ -1,417 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
-<title>Away Game — Christian Parent’s Playbook</title>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Fairborn Fire – Radio Template</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #f8f9fa; font-family: 'DM Sans', system-ui, sans-serif; color: #1a1a1a; line-height: 1.6; }
-button { cursor: pointer; }
-.progress-bar { height: 10px; background: #e9ecef; border-radius: 9999px; overflow: hidden; }
-.progress-fill { height: 100%; transition: width 0.5s ease; }
-.team-card { background: #fff; border: 1px solid #dee2e6; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
-.delete-btn { background: #fee2e2; color: #ef4444; border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; }
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg:#0d1117; --surface:#161b22; --surface2:#1c2330; --border:#30363d;
+    --accent:#e05c1a; --accent2:#f0a500; --accent3:#1a7fbf;
+    --text:#e6edf3; --muted:#8b949e; --red:#da3633;
+    --match-bg:rgba(240,165,0,.2); --match-border:#f0a500;
+    /* mobile-first font scale */
+    --fs-label: 15px;
+    --fs-value: 16px;
+    --fs-ch:    14px;
+    --fs-title: 20px;
+    --fs-sub:   12px;
+    --fs-header:22px;
+  }
+
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background:var(--bg); color:var(--text);
+    font-family:'Barlow Condensed',sans-serif;
+    min-height:100vh;
+    /* prevent bounce scroll interfering with sticky header */
+    overscroll-behavior-y:none;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background:linear-gradient(160deg,#0d1117 0%,#1a1f2e 55%,#0d1117 100%);
+    border-bottom:3px solid var(--accent);
+    padding:12px 16px 10px;
+    display:flex; flex-direction:column; gap:10px;
+    position:sticky; top:0; z-index:200;
+    box-shadow:0 3px 18px rgba(0,0,0,.7);
+  }
+
+  .header-top { display:flex; align-items:center; gap:12px; }
+
+  .badge {
+    background:var(--accent); color:#fff;
+    font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:11px; letter-spacing:2px;
+    padding:4px 10px; border-radius:4px;
+    text-transform:uppercase; white-space:nowrap; flex-shrink:0;
+  }
+
+  h1 {
+    font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:var(--fs-header); letter-spacing:1px; line-height:1.1;
+  }
+  h1 span { color:var(--accent2); }
+  .subtitle { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:.8px; margin-top:3px; }
+
+  /* ── SEARCH ── */
+  .search-row { display:flex; gap:8px; align-items:center; }
+
+  #searchInput {
+    flex:1; min-width:0;
+    background:var(--surface2); border:1.5px solid var(--border);
+    color:var(--text); font-family:'Share Tech Mono',monospace;
+    font-size:16px; /* 16px prevents iOS auto-zoom */
+    padding:10px 14px; border-radius:6px; outline:none;
+    transition:border-color .2s;
+  }
+  #searchInput:focus { border-color:var(--accent); }
+  #searchInput::placeholder { color:var(--muted); font-size:14px; }
+
+  .nav-btn {
+    background:var(--surface2); border:1.5px solid var(--border); color:var(--text);
+    font-size:18px; padding:8px 14px; border-radius:6px; cursor:pointer;
+    transition:background .15s; flex-shrink:0; line-height:1;
+    min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center;
+  }
+  .nav-btn:hover, .nav-btn:active { background:var(--accent); border-color:var(--accent); }
+  .nav-btn:disabled { opacity:.3; }
+  .nav-btn:disabled:hover { background:var(--surface2); border-color:var(--border); }
+
+  .clear-btn {
+    background:transparent; border:1.5px solid var(--border); color:var(--muted);
+    font-size:15px; padding:8px 11px; border-radius:6px; cursor:pointer;
+    min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .clear-btn:hover, .clear-btn:active { border-color:var(--red); color:var(--red); }
+
+  #matchCount {
+    font-family:'Share Tech Mono',monospace; font-size:12px;
+    color:var(--accent2); white-space:nowrap; min-width:60px; text-align:right; flex-shrink:0;
+  }
+
+  /* ── TOOLS ── */
+  .tools-row { display:flex; gap:8px; align-items:center; }
+  .tool-btn {
+    background:transparent; border:1.5px solid var(--border); color:var(--muted);
+    font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:600;
+    padding:6px 12px; border-radius:5px; cursor:pointer;
+    min-height:36px; letter-spacing:.5px;
+  }
+  .tool-btn:hover, .tool-btn:active { border-color:var(--accent3); color:var(--accent3); }
+
+  /* ── MAIN ── */
+  main { padding:12px; max-width:900px; margin:0 auto; }
+
+  /* ── ACCORDION ── */
+  .accordion {
+    border:1.5px solid var(--border); border-radius:8px;
+    margin-bottom:10px; overflow:hidden;
+  }
+  .accordion.has-match {
+    border-color:var(--match-border);
+    box-shadow:0 0 0 1px var(--match-border), 0 4px 16px rgba(240,165,0,.12);
+  }
+
+  .acc-header {
+    display:flex; align-items:center;
+    padding:13px 14px; cursor:pointer;
+    background:var(--surface); gap:12px;
+    user-select:none; -webkit-user-select:none;
+    transition:background .15s;
+    min-height:62px;
+  }
+  .acc-header:active { background:var(--surface2); }
+
+  .zone-stripe { width:6px; min-height:44px; border-radius:3px; flex-shrink:0; }
+
+  .acc-title-wrap { flex:1; min-width:0; }
+  .acc-title {
+    font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:var(--fs-title); letter-spacing:.5px;
+    line-height:1.1; color:var(--text);
+  }
+  .acc-sub {
+    font-family:'Share Tech Mono',monospace;
+    font-size:var(--fs-sub); color:var(--muted);
+    margin-top:2px; line-height:1.2;
+  }
+
+  .match-pill {
+    background:var(--match-bg); border:1px solid var(--match-border);
+    color:var(--accent2); font-family:'Share Tech Mono',monospace;
+    font-size:11px; padding:2px 8px; border-radius:10px;
+    display:none; white-space:nowrap; flex-shrink:0;
+  }
+  .has-match .match-pill { display:block; }
+
+  .chevron {
+    color:var(--muted); font-size:14px;
+    transition:transform .25s; flex-shrink:0; margin-left:2px;
+  }
+  .accordion.open .chevron { transform:rotate(180deg); }
+
+  /* ── BODY ── */
+  .acc-body { display:none; background:var(--surface2); border-top:1.5px solid var(--border); }
+  .accordion.open .acc-body { display:block; }
+
+  /* ── TABLE ── */
+  .grid-table { width:100%; border-collapse:collapse; }
+
+  .grid-table thead tr {
+    background:rgba(13,17,23,.85);
+    border-bottom:1.5px solid var(--border);
+  }
+  .grid-table th {
+    color:var(--accent); font-family:'Rajdhani',sans-serif;
+    font-weight:700; font-size:12px; letter-spacing:1.5px;
+    text-transform:uppercase; padding:8px 14px;
+    text-align:left; white-space:nowrap;
+  }
+
+  .grid-table td {
+    padding:11px 14px;
+    border-bottom:1px solid rgba(48,54,61,.4);
+    vertical-align:middle; line-height:1.3;
+  }
+  .grid-table tr:last-child td { border-bottom:none; }
+  .grid-table tr:active td { background:rgba(255,255,255,.03); }
+
+  .ch-col {
+    font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:var(--fs-ch); color:var(--accent2);
+    width:52px; min-width:52px; white-space:nowrap;
+  }
+  .val-col {
+    font-family:'Share Tech Mono',monospace;
+    font-size:var(--fs-value); color:var(--text);
+    word-break:break-word;
+  }
+
+  mark { background:rgba(240,165,0,.3); color:#ffd370; border-radius:2px; padding:0 1px; }
+  .current-match mark { background:rgba(224,92,26,.55); color:#fff; outline:1.5px solid var(--accent); border-radius:2px; }
+
+  /* ── DESKTOP BUMP ── */
+  @media(min-width:640px) {
+    :root {
+      --fs-label:14px; --fs-value:14px; --fs-ch:13px;
+      --fs-title:18px; --fs-sub:11px; --fs-header:24px;
+    }
+    main { padding:16px; }
+    .acc-header { min-height:56px; padding:12px 16px; }
+    .grid-table td { padding:8px 16px; }
+  }
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel" data-presets="react">
-const { useState } = React;
+<header>
+  <div class="header-top">
+    <div class="badge">🔴 FBF</div>
+    <div>
+      <h1>FAIRBORN FIRE <span>RADIO</span></h1>
+      <div class="subtitle">GMVEMSC · ZONE-FIRST · CH 1–16 PER ZONE</div>
+    </div>
+  </div>
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="Search zone, call sign…" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none">
+    <button class="nav-btn" id="prevBtn" disabled aria-label="Previous">▲</button>
+    <button class="nav-btn" id="nextBtn" disabled aria-label="Next">▼</button>
+    <button class="clear-btn" id="clearBtn" aria-label="Clear">✕</button>
+    <div id="matchCount"></div>
+  </div>
+  <div class="tools-row">
+    <button class="tool-btn" id="expandAll">Expand All</button>
+    <button class="tool-btn" id="collapseAll">Collapse All</button>
+  </div>
+</header>
+<main id="main"></main>
+<script>
+const ZONES=[
+  {key:"MONT_HOSP", label:"MONT HOSP",    sub:"Montgomery Hospital Zone",       color:"#56d364"},
+  {key:"MONT_40",   label:"MONT CO 40",   sub:"Montgomery County 40",           color:"#56d364"},
+  {key:"MONT_60",   label:"MONT CO 60",   sub:"Montgomery County 60",           color:"#3fb950"},
+  {key:"MONT_70",   label:"MONT CO 70",   sub:"Montgomery County 70",           color:"#3fb950"},
+  {key:"MONT_80",   label:"MONT CO 80",   sub:"Montgomery County 80",           color:"#2ea043"},
+  {key:"MONT_90",   label:"MONT CO 90",   sub:"Montgomery County 90",           color:"#2ea043"},
+  {key:"MONT_CW",   label:"MONT CO CW",   sub:"Montgomery County CW",           color:"#26813a"},
+  {key:"SW1",       label:"SW MUT AID 1", sub:"Southwest Mutual Aid 1",         color:"#388bfd"},
+  {key:"SW2",       label:"SW MUT AID 2", sub:"Southwest Mutual Aid 2",         color:"#1a7fbf"},
+  {key:"XEMA",      label:"LCL XEMA",     sub:"Local XEMA",                     color:"#0969da"},
+  {key:"FBF1",      label:"FBF 1",        sub:"Fairborn Fire Band 1",           color:"#e05c1a"},
+  {key:"FBF2",      label:"FBF 2",        sub:"Fairborn Fire Band 2",           color:"#f0a500"},
+  {key:"FBF3",      label:"FBF 3",        sub:"Fairborn Fire Band 3",           color:"#8957e5"},
+  {key:"GFWEST",    label:"GF WEST",      sub:"Greene/Fairborn West",           color:"#1a7fbf"},
+  {key:"GFEAST",    label:"GF EAST",      sub:"Greene/Fairborn East",           color:"#2ea043"},
+  {key:"R3HOSP",    label:"R3 HOSP",      sub:"Region 3 Hospital",             color:"#da3633"},
+  {key:"XHOS1",     label:"LCL XHOS1",    sub:"Local Cross-Hospital 1",        color:"#6e7681"},
+  {key:"XHOS2",     label:"LCL XHOS2",    sub:"Local Cross-Hospital 2",        color:"#57606a"},
+  {key:"XSO",       label:"LCL XSO",      sub:"Local Cross-Sheriff / Other",   color:"#bc8cff"},
+  {key:"XCLARK1",   label:"XCLARK F1",    sub:"Clark County Fire 1",           color:"#ffa28b"},
+  {key:"XCLARK2",   label:"XCLARK F2",    sub:"Clark County Fire 2",           color:"#ff8c69"},
+];
 
-// ─── STORAGE ──────────────────────────────────────────────────────────────────
-function load(key, fb) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fb; } catch { return fb; } }
-function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
-let _c = Date.now();
-function uid() { return "x" + (++_c).toString(36); }
-
-// ─── COLORS ───────────────────────────────────────────────────────────────────
-const C = {
-  bg0: "#f8f9fa", bg1: "#ffffff", bg2: "#f1f3f5", bg3: "#e9ecef",
-  border: "#dee2e6", borderHi: "#ff8c00",
-  text: "#1a1a1a", textSub: "#495057", textMuted: "#6c757d",
-  orange: "#ff8c00", green: "#00b36b"
+const DATA={
+  MONT_HOSP:["29FBFBDIS","57CMH","57GSH","57GSH N","57GVH","57HHER","57KMC","57MVH","57MVHS","57SVH","57VAHOSP","29FBFBDIS","57HHFFDIS","29WSUDIS","29SODIS","8TAC93D FD"],
+  MONT_40:  ["29FBFBDIS","57HHFDDISP","57OPS43","57OPS43","57OPS44","57OPS45","57OPS46","57OPS47","57OPS48","57MEDIC4A","57MEDIC4B","57HHFFDIS","57HHFFDIS","570PS44","570PS45","8TAC93D FD"],
+  MONT_60:  ["29FBFBDIS","57OPS62","57OPS63","57OPS63","57OPS64","57OPS65","57OPS66","57OPS67","57OPS68","57MEDIC6A","57MEDIC6B","HSR6-MCI","8TAC94D","HSR6-MCI","570PS45","8TAC93D FD"],
+  MONT_70:  ["29FBFBDIS","57OPS72","57OPS73","57OPS73","57OPS74","57OPS75","57OPS76","57OPS77","57OPS78","57MEDIC7B","57MEDIC7C","8TAC92D","8TAC94D","WPF TAC1","WPAFB","29FBFDIS"],
+  MONT_80:  ["29FBFBDIS","57RDCFIRE2","57OPS83","57OPS83","57OPS84","57OPS85","57OPS86","57OPS87","57OPS88","57OPS8A","57OPS8B","8TAC92D","8TAC94D","29FTAC23","29FTAC24","8TAC93D FD"],
+  MONT_90:  ["29FBFBDIS","57OPS92","57OPS93","57OPS93","57OPS94","57OPS95","57OPS96","57OPS97","57OPS98","57OPS9A","57OPS9B","8TAC92D A1","HSR3 ED3","HSR6 MCI","8TAC92D A1","8TAC93D FD"],
+  MONT_CW:  ["29FBFBDIS","57CW1","57CW1","57CW1","57CW2","58 CW 2","58 CW 1","59 CW 1","59 CW 2","57LE3","57LE4","57RDCFIRE2","57RDCHELP","57SOJAIL","57 ARC","57RT ASUPV"],
+  SW1:      ["SWMATAC1 WARREN CO.","SWMATAC1 WARREN CO.","SWMATAC2 WARREN CO.","SWMATAC3 GREENE CO.","SWMATAC4 GREENE CO.","SWMATAC5 CLINTON CO.","SWMATAC6 CLERMONT","SWMATAC7 CLERMONT","SWMATAC8 CLERMONT CO.","SWMATAC9 HAMILTON CO.","SWMATAC10 HAMILTON CO.","SWMATAC11 BUTLER CO.","SWMATAC12 BUTLER CO.","SWMATAC13 MONTGOMERY CO.","SWMATAC14 MONTGOMERY CO.","SWMATAC14 MONTGOMERY CO."],
+  SW2:      ["SWMATAC15","SWMATAC15","SWMATAC15","SWMATAC15","SWMATAC16","SWMATAC16","SWMATAC16","SWMATAC16","SWMATAC16","SWMATAC16","SWMATAC17","SWMATAC17","SWMATAC17","SWMAYDAY3","SWMAYDAY2","SWMAYDAY2"],
+  XEMA:     ["XCOEMA29","XCOEMA29","XCOEMA29","XCOEMA57","XCOEMA57","XCOEMA57","XCOEMAS7","XCOEMASS","XCOEMA14","XCOEMA14","XCOEMA14","XCOEMA09","XCOEMA09","XCOEMASS","XCOEMASS","XCOEMA28"],
+  FBF1:     ["29FBFBDIS","29FTAC1","29FTAC2","29FTAC3","29FTAC4","29FTAC5","29FTAC6","29FBFROP2","29FBFROP1","29XCFDIS","29GFRDIS","12RDC FIRE","29FBPDIS","29FBPDIS","29FBPDIS","8TAC93D FD"],
+  FBF2:     ["29FBFBDIS","29FTAC1","29FTAC2","29FTAC3","29FTAC4","29FTAC4","29TAC11","29TAC12","29TAC13","29TAC13","12FDTC14","12FDTC16","570PS43","570PS42","8TAC93D","8TAC93D"],
+  FBF3:     ["29FBFBDIS","29 SOIN","11 MERCY","57 MVH","57 MVH S","57 KMC","57 GVH","29 WPMC","57 CMC","29 WPMC","NEW BVK ED","8TAC92D","8TAC94D","8TAC94D","8TAC93D FD","8TAC93D FD"],
+  GFWEST:   ["29FBFDIS","29FTAC1","29FTAC2","29FTAC3","29FTAC4","29FTAC5","29FTAC6","29FTAC7","29FTAC8","29FTAC8","29BVFEDIS","29GFWDIS","29FBFDIS","WPAFB","29FBFDIS","29FBFDIS"],
+  GFEAST:   ["29FBFDIS","29FTAC1","29FTAC2","29FTAC4","29FTAC5","29FTAC6","29FTAC7","29FTAC8","29FTAC9","29FTAC16","29XCFDIS","29XCFDIS","29FTAC21","29FTAC22","29FTAC22","29FBFDIS"],
+  R3HOSP:   ["29FBFDIS","296MH","29SOIN","29WPMC","83KEC FS","19WAYNE","12SRMC","55UVMC","11MERCY","68PREB","09ATRIUM","HSR3 ED3","HSR3 MCI","HSR3 MCI","8TAC92D A1","8TAC93D FD"],
+  XHOS1:    ["XHOS2902 Dis","XHOS2901 GMH","XHOS0903 Atrium Med Ctr","XHOS2501 Natnwd Childrns","XHOS1201 SRMC","XHOS1101 Mercy MmrI","XHOS4901 Madison Co H","XHOS5702 Good Sam","XHOS5703 Grandview","XHOS5704 Ketterin","XHOS5705 Miami Valley","XHOS5706 Southview","XHOS5707 Sycamore","XHOS5708 Day Childrns","XHOS5501 Upper Valley","XHOSWCEN"],
+  XHOS2:    ["29FBFDIS","XHOS CEN","XHOS CEN","XHOS2504 Grant Medical","XHOS2504 Grant Medical","XHOS2509 Mt Carmel West","XHOS2510 Rvrside Mthdst","XHOS2511 OSU Hospital","XHOS3102 Cincy Childrns","XHOS3110 University Hosp","XBLANK","XBLANK","XBLANK","XBLANK","XBLANK","XBLANK"],
+  XSO:      ["XSO-29","XSO-57","XSO-55","XSO-12","XSO-49","XSO-24","XSO-14","XSO-83","XSO-19","XSO-68","XSO-68","XSO-CEN","XSO-NW","XSO-NE","XSO-SE","XSO-SW"],
+  XCLARK1:  ["12FDDIS1","12FDDIS2","12FDTAC13","12FDTAC14","12FDTAC15","12FDTAC16","7FIRE3D","8TAC93D","8TAC93D","8TAC93D","8TAC93D","12SODIS P","8TACT1","12CWTA C1","XCOEMA12","12FDDIS1"],
+  XCLARK2:  ["12FDDIS1","12FDDIS2","7TAC3D","7TAC3D","7TAC3D","7TAC3C1D","7TAC3C2D","7TAC3D","7TAC4D","7TAC5D","7TAC5D","7TAC6D","8TAC92","8TAC93","8TAC94","8TAC93D"],
 };
 
-// ─── VIRTUES (Complete) ───────────────────────────────────────────────────────
-const VIRTUES = {
-  L: { key:"L", label:"Love", icon:"❤️", tagline:"Others-first in a me-first culture", color:"#ff4d4d", bg:"#fff0f0", border:"#ff8c00",
-       scoreMeaning: "0=Never • 1=Rarely • 2=Sometimes • 3=Consistently puts others first",
-       strong: ["Celebrates teammates' success", "Shows genuine kindness", "Puts team above self"],
-       weak:   ["Selfish on and off the field", "Dismisses or ignores teammates", "Only cheers for own highlights"],
-       develop: ["After each game, name one teammate who helped you win", "Do one act of encouragement before you leave the field", "Pray: 'Lord, help me love my teammates the way You love me'"] },
-  P: { key:"P", label:"Peace", icon:"☮️", tagline:"Calm anchored in Christ", color:"#00b36b", bg:"#f0fff4", border:"#ff8c00",
-       scoreMeaning: "0=Constant anxiety • 1=Occasional calm • 2=Usually calm • 3=Peace that guards the heart",
-       strong: ["Stays composed under pressure", "Calms teammates in tense moments", "Bounces back quickly from mistakes"],
-       weak:   ["Anxious or panicked when things go wrong", "Spreads tension to teammates", "Dwells on errors during play"],
-       develop: ["Practice three slow breaths before any big moment", "Write down one worry this week and give it to God in prayer", "Memorize Phil. 4:7 — let it anchor your pregame routine"] },
-  S: { key:"S", label:"Self-Control", icon:"🛡️", tagline:"Responding instead of reacting", color:"#0077cc", bg:"#f0f8ff", border:"#ff8c00",
-       scoreMeaning: "0=Frequent outbursts • 1=Improving • 2=Usually controlled • 3=Strong self-discipline",
-       strong: ["Responds to bad calls without blowing up", "Keeps emotions in check under provocation", "Leads by example in discipline"],
-       weak:   ["Frequent outbursts or meltdowns", "Argues with officials or coaches", "Lets frustration hurt performance"],
-       develop: ["Identify your #1 trigger — name it, then make a plan for it", "After a bad call, count to 5 before you react", "Ask a trusted teammate to hold you accountable this week"] },
-  G: { key:"G", label:"Gentleness", icon:"🌿", tagline:"Strength under control", color:"#9c4dff", bg:"#f8f0ff", border:"#ff8c00",
-       scoreMeaning: "0=Often harsh • 1=Sometimes gentle • 2=Usually gentle • 3=Strength under control",
-       strong: ["Encourages struggling teammates", "Competes hard without being cruel", "Uses words that build up, not tear down"],
-       weak:   ["Often harsh or cutting with words", "Intimidates or belittles others", "Confuses meanness with toughness"],
-       develop: ["Before criticizing a teammate, ask: 'Is this kind AND true?'", "Find one struggling player this week and intentionally encourage them", "Journal: where did strength AND gentleness show up together today?"] },
-  H: { key:"H", label:"Humility", icon:"🙏", tagline:"Playing from identity, not for identity", color:"#ff8c00", bg:"#fff8f0", border:"#ff8c00",
-       scoreMeaning: "0=Very prideful • 1=Occasional humility • 2=Growing humility • 3=Consistently humble",
-       strong: ["Credits teammates and coaches for success", "Accepts coaching without defensiveness", "Secure enough to celebrate others"],
-       weak:   ["Takes credit, deflects blame", "Gets defensive when corrected", "Needs to be the star"],
-       develop: ["After your next win, publicly credit two specific teammates", "When corrected by a coach, respond: 'Thank you, I'll work on that'", "Ask yourself: 'Am I playing TO prove something or FROM knowing who I am?'"] },
-  Gr: { key:"Gr", label:"Gratitude", icon:"🙌", tagline:"Thankful in all circumstances", color:"#ffaa00", bg:"#fffdf0", border:"#ff8c00",
-       scoreMeaning: "0=Very entitled • 1=Occasional thanks • 2=Usually grateful • 3=Thankful in all circumstances",
-       strong: ["Thanks coaches, officials, and opponents", "Grateful for the opportunity to compete", "Positive attitude win or lose"],
-       weak:   ["Entitled attitude about playing time or roles", "Rarely thanks others", "Complains about conditions, calls, or teammates"],
-       develop: ["Start every practice with one thing you're grateful for about this team", "Write a one-line thank-you to a coach or teammate this week", "After a loss, find three genuine things to be thankful for before you leave"] },
-  J: { key:"J", label:"Joy", icon:"🎉", tagline:"Delight that outlasts the score", color:"#ff6600", bg:"#fff4f0", border:"#ff8c00",
-       scoreMeaning: "0=Joy is gone • 1=Rare joy • 2=Usually joyful • 3=Consistent delight",
-       strong: ["Genuine enjoyment of the game", "Joy that doesn't depend on the scoreboard", "Lifts the energy of those around them"],
-       weak:   ["Only happy when winning", "Drains team energy with negativity", "Has lost the love of the game"],
-       develop: ["Recall why you first fell in love with this sport — write it down", "Find one moment in each practice to just enjoy the game", "Remind yourself: the scoreboard is temporary, but who you're becoming is not"] }
-};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function hl(t,q){const e=esc(t);if(!q)return e;return e.replace(new RegExp('('+escRe(q)+')','gi'),'<mark>$1</mark>');}
+function hits(t,q){if(!q)return 0;return(t.match(new RegExp(escRe(q),'gi'))||[]).length;}
 
-const SCORE_LABELS = ["Missing", "Emerging", "Developing", "Strong"];
+const mainEl=document.getElementById('main');
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function getCombo(scores) {
-  const strong = Object.values(scores).filter(v => v === 3).length;
-  const developing = Object.values(scores).filter(v => v >= 2).length;
-  const avg = (Object.values(scores).reduce((a,b) => a + b, 0) / 7).toFixed(1);
-
-  if (strong >= 5) return { label: "Kingdom Competitor", icon: "🏆", desc: `Avg ${avg}/3`, color: C.orange, progress: 95 };
-  if (developing >= 6) return { label: "Strong Disciple", icon: "🌟", desc: `Avg ${avg}/3`, color: C.green, progress: 85 };
-  return { label: "Developing Disciple", icon: "🌱", desc: `Avg ${avg}/3`, color: "#fd7e14", progress: Math.round(developing / 7 * 100) };
-}
-
-function calculateTeamProgress(athletes) {
-  if (athletes.length === 0) return { avgScore: "0.0", strongPercent: 0, totalAthletes: 0 };
-  let totalScore = 0, totalStrong = 0;
-  const totalVirtues = athletes.length * 7;
-
-  athletes.forEach(a => {
-    const scores = Object.values(a.scores || {});
-    totalScore += scores.reduce((a,b) => a + b, 0);
-    totalStrong += scores.filter(v => v === 3).length;
+function render(query){
+  mainEl.innerHTML='';
+  const q=(query||'').trim().toLowerCase();
+  let total=0;
+  ZONES.forEach(zone=>{
+    const vals=DATA[zone.key];
+    const allText=vals.join(' ').toLowerCase();
+    const n=q?hits(allText,q):0;
+    total+=n;
+    const div=document.createElement('div');
+    div.className='accordion'+(q&&n>0?' has-match':'');
+    const rows=vals.map((v,i)=>`<tr>
+      <td class="ch-col">CH&nbsp;${i+1}</td>
+      <td class="val-col">${hl(v,q)}</td>
+    </tr>`).join('');
+    div.innerHTML=`
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="zone-stripe" style="background:${zone.color}"></span>
+        <div class="acc-title-wrap">
+          <div class="acc-title">${esc(zone.label)}</div>
+          <div class="acc-sub">${esc(zone.sub)}</div>
+        </div>
+        <span class="match-pill">${n} match${n!==1?'es':''}</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="acc-body">
+        <table class="grid-table">
+          <thead><tr><th>CH</th><th>CALL SIGN / ASSIGNMENT</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    mainEl.appendChild(div);
   });
-
-  const avgScore = (totalScore / totalVirtues).toFixed(1);
-  const strongPercent = Math.round((totalStrong / totalVirtues) * 100);
-
-  return { avgScore, strongPercent, totalAthletes: athletes.length };
-}
-
-// ─── MODALS ───────────────────────────────────────────────────────────────────
-function Modal({title, onClose, children}) {
-  return (
-    <div style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", zIndex:500, display:"flex", alignItems:"center", justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div style={{background:"#fff", borderRadius:16, width:"92%", maxWidth:720, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 25px 70px rgba(0,0,0,0.25)"}}>
-        <div style={{padding:"18px 24px", borderBottom:"1px solid #dee2e6", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
-          <span style={{fontSize:21, fontWeight:800, color:C.orange}}>{title}</span>
-          <button onClick={onClose} style={{fontSize:24, background:"none", border:"none", color:"#666"}}>✕</button>
-        </div>
-        <div style={{padding:24, overflowY:"auto", maxHeight:"78vh"}}>{children}</div>
-      </div>
-    </div>
-  );
-}
-
-function ConfirmDelete({name, onConfirm, onCancel}) {
-  return (
-    <Modal title="Delete Athlete" onClose={onCancel}>
-      <p style={{fontSize:16, marginBottom:24}}>Are you sure you want to permanently delete <strong>{name}</strong>?</p>
-      <p style={{color:"#ef4444", marginBottom:24}}>This cannot be undone.</p>
-      <div style={{display:"flex", gap:12, justifyContent:"flex-end"}}>
-        <button onClick={onCancel} style={{padding:"12px 24px", border:"none", background:"#ddd", borderRadius:10}}>Cancel</button>
-        <button onClick={onConfirm} style={{padding:"12px 28px", border:"none", background:"#ef4444", color:"#fff", borderRadius:10, fontWeight:700}}>Yes, Delete</button>
-      </div>
-    </Modal>
-  );
-}
-
-// ─── EDIT MODAL ───────────────────────────────────────────────────────────────
-function EditModal({person, onSave, onClose}) {
-  const [data, setData] = useState({...person, notes: person.notes || ""});
-
-  const updateScore = (key, value) => setData(prev => ({...prev, scores: {...prev.scores, [key]: Number(value)}}));
-
-  return (
-    <Modal title={data.id ? "Edit Athlete" : "Add New Athlete"} onClose={onClose}>
-      <input placeholder="Athlete Name *" value={data.name||""} onChange={e=>setData({...data,name:e.target.value})} style={{width:"100%", padding:14, fontSize:17, border:`2px solid ${C.border}`, borderRadius:10, marginBottom:12}} />
-      <input placeholder="Role / Team (optional)" value={data.role||""} onChange={e=>setData({...data,role:e.target.value})} style={{width:"100%", padding:14, fontSize:17, border:`2px solid ${C.border}`, borderRadius:10, marginBottom:20}} />
-
-      <div style={{marginBottom:20}}>
-        <div style={{fontWeight:700, color:C.orange, marginBottom:12}}>Score Each Virtue (0–3)</div>
-        {Object.values(VIRTUES).map(t => (
-          <div key={t.key} style={{marginBottom:16, padding:16, background:"#fff", border:`1px solid ${t.border}`, borderRadius:12}}>
-            <div style={{display:"flex", alignItems:"center", gap:12, marginBottom:8}}>
-              <span style={{fontSize:28}}>{t.icon}</span>
-              <div style={{flex:1, fontWeight:700, color:t.color}}>{t.label}</div>
-            </div>
-            <div style={{fontSize:13, color:"#555", marginBottom:10}}>{t.scoreMeaning}</div>
-            <div style={{display:"flex", gap:6}}>
-              {[0,1,2,3].map(n => (
-                <button key={n} onClick={()=>updateScore(t.key,n)} style={{flex:1, padding:"10px", borderRadius:8, background: data.scores[t.key]===n ? C.orange : "#f1f3f5", color: data.scores[t.key]===n ? "#fff" : "#333", fontWeight:700}}>
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{marginBottom:20}}>
-        <div style={{fontWeight:700, marginBottom:8}}>Notes / Observations / Prayers</div>
-        <textarea value={data.notes} onChange={e=>setData({...data, notes:e.target.value})} placeholder="Key moments, growth areas, specific prayers..." style={{width:"100%", height:130, padding:14, border:`2px solid ${C.border}`, borderRadius:10, resize:"vertical"}} />
-      </div>
-
-      <div style={{display:"flex", gap:12, justifyContent:"flex-end"}}>
-        <button onClick={onClose} style={{padding:"12px 24px", border:"none", background:"#ddd", borderRadius:10}}>Cancel</button>
-        <button onClick={()=>onSave(data)} style={{padding:"12px 32px", border:"none", background:C.orange, color:"#fff", borderRadius:10, fontWeight:700}} disabled={!data.name?.trim()}>💾 Save Changes</button>
-      </div>
-    </Modal>
-  );
-}
-
-// ─── PERSON DETAIL ────────────────────────────────────────────────────────────
-function PersonDetail({person, onClose, onEdit}) {
-  const [tab, setTab] = useState("assess");
-  const combo = getCombo(person.scores);
-
-  return (
-    <Modal title={person.name} onClose={onClose}>
-      <div style={{display:"flex", justifyContent:"space-between", marginBottom:20}}>
-        <div>
-          <div style={{fontSize:52}}>{combo.icon}</div>
-          <div style={{fontSize:24, fontWeight:800, color:combo.color}}>{combo.label}</div>
-        </div>
-        <button onClick={()=>{ onEdit(person); onClose(); }} style={{background:C.orange, color:"#fff", border:"none", padding:"10px 22px", borderRadius:10, fontWeight:700}}>✏ Edit</button>
-      </div>
-
-      <div style={{marginBottom:24}}>
-        <div style={{display:"flex", justifyContent:"space-between", fontSize:14, marginBottom:8}}>
-          <span>Character Progress</span>
-          <span>{combo.progress}%</span>
-        </div>
-        <div className="progress-bar">
-          <div className="progress-fill" style={{width: `${combo.progress}%`, background: combo.progress > 80 ? "linear-gradient(90deg,#00b36b,#34d399)" : combo.progress > 50 ? "linear-gradient(90deg,#ff8c00,#ffaa00)" : "#dc3545"}} />
-        </div>
-        <div style={{fontSize:13, color:C.textMuted, marginTop:6}}>
-          Last updated: {person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : "Never"}
-        </div>
-      </div>
-
-      <div style={{display:"flex", borderBottom:"3px solid #ff8c00", marginBottom:20}}>
-        {["assess","develop","notes"].map(t => (
-          <button key={t} onClick={()=>setTab(t)} style={{flex:1, padding:"14px", fontWeight:700, background:tab===t?C.orange:"#f1f3f5", color:tab===t?"#fff":"#333", border:"none"}}>
-            {t==="assess"?"📊 Profile":t==="develop"?"🛠 Develop":"📝 Notes"}
-          </button>
-        ))}
-      </div>
-
-      {tab==="assess" && Object.entries(person.scores).map(([k,v]) => {
-        const t = VIRTUES[k];
-        const showHas = v >= 2;
-        return (
-          <div key={k} style={{marginBottom:20, background:"#fff", border:`2px solid ${t.border}`, borderRadius:14, overflow:"hidden"}}>
-            <div style={{background:t.bg, padding:"16px 20px", display:"flex", alignItems:"center", gap:16}}>
-              <span style={{fontSize:42}}>{t.icon}</span>
-              <div style={{flex:1}}><div style={{fontSize:21, fontWeight:800, color:t.color}}>{t.label}</div></div>
-              <span style={{fontSize:18, fontWeight:700}}>{v}/3</span>
-            </div>
-            <div style={{padding:"20px"}}>
-              {(showHas ? t.strong : t.weak).map((s,i) => (
-                <div key={i} style={{marginBottom:6}}>{showHas?"→":"–"} {s}</div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-
-      {tab==="develop" && (
-        <div>
-          {Object.entries(person.scores).map(([k,v]) => {
-            const t = VIRTUES[k];
-            return (
-              <div key={k} style={{marginBottom:20, background:"#fff", border:`2px solid ${t.border}`, borderRadius:14, overflow:"hidden"}}>
-                <div style={{background:t.bg, padding:"14px 20px", display:"flex", alignItems:"center", gap:12}}>
-                  <span style={{fontSize:28}}>{t.icon}</span>
-                  <div style={{fontSize:18, fontWeight:800, color:t.color, flex:1}}>{t.label}</div>
-                  <span style={{fontSize:14, color:C.textMuted, background:"#fff", padding:"4px 10px", borderRadius:20, fontWeight:700}}>{SCORE_LABELS[v]}</span>
-                </div>
-                <div style={{padding:"16px 20px"}}>
-                  {t.develop.map((step,i) => (
-                    <div key={i} style={{display:"flex", gap:12, marginBottom:10, alignItems:"flex-start"}}>
-                      <span style={{background:C.orange, color:"#fff", borderRadius:"50%", width:22, height:22, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, flexShrink:0}}>{i+1}</span>
-                      <span style={{fontSize:14, color:C.text, lineHeight:1.5}}>{step}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {tab==="notes" && (
-        <div style={{background:"#fff", border:`1px solid ${C.border}`, borderRadius:12, padding:24, minHeight:200, whiteSpace:"pre-wrap", fontSize:15}}>
-          {person.notes || "No notes added yet."}
-        </div>
-      )}
-    </Modal>
-  );
-}
-
-const BLANK_ATHLETE = { id:"", name:"", role:"", notes:"", scores:{L:1,P:1,S:1,G:1,H:1,Gr:1,J:1}, lastUpdated: null };
-
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
-function App() {
-  const [tab, setTab] = useState("athletes");
-  const [athletes, setAthletes] = useState(() => load("awaygame_athletes_v1", []));
-  const [editing, setEditing] = useState(null);
-  const [viewing, setViewing] = useState(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
-
-  function saveAthlete(p) {
-    const updated = {...p, id: p.id || uid(), lastUpdated: Date.now()};
-    const next = p.id ? athletes.map(x => x.id === p.id ? updated : x) : [...athletes, updated];
-    setAthletes(next);
-    save("awaygame_athletes_v1", next);
-    setEditing(null);
+  if(q){
+    document.querySelectorAll('.accordion.has-match').forEach(a=>a.classList.add('open'));
+    document.querySelectorAll('.accordion:not(.has-match)').forEach(a=>a.classList.remove('open'));
   }
-
-  function deleteAthlete(id) {
-    const next = athletes.filter(a => a.id !== id);
-    setAthletes(next);
-    save("awaygame_athletes_v1", next);
-    setDeleteConfirm(null);
-    if (viewing && viewing.id === id) setViewing(null);
-  }
-
-  const teamStats = calculateTeamProgress(athletes);
-
-  return (
-    <div style={{minHeight:"100vh", background:"#f8f9fa"}}>
-      {/* HEADER */}
-      <div style={{background:"#fff", borderBottom:"4px solid #ff8c00", padding:"0 24px", height:76, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 3px 12px rgba(0,0,0,0.1)"}}>
-        <div>
-          <div style={{fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:32, letterSpacing:1.5, color:C.orange}}>AWAY GAME</div>
-          <div style={{fontSize:13, color:"#555"}}>Christian Parent’s Playbook</div>
-        </div>
-        <div style={{display:"flex", gap:8}}>
-          <button onClick={()=>setTab("athletes")} style={{padding:"10px 22px", borderRadius:10, background:tab==="athletes"?C.orange:"#fff", color:tab==="athletes"?"#fff":"#333", fontWeight:700, border:"2px solid #ff8c00"}}>👥 My Athletes</button>
-          <button onClick={()=>setTab("playbook")} style={{padding:"10px 22px", borderRadius:10, background:tab==="playbook"?C.orange:"#fff", color:tab==="playbook"?"#fff":"#333", fontWeight:700, border:"2px solid #ff8c00"}}>📖 The Playbook</button>
-        </div>
-      </div>
-
-      {tab === "athletes" && (
-        <div style={{padding:24}}>
-          {/* TEAM PROGRESS DASHBOARD */}
-          {athletes.length > 0 && (
-            <div className="team-card" style={{marginBottom:32}}>
-              <div style={{fontSize:20, fontWeight:800, marginBottom:16, color:C.orange}}>Team Progress Overview</div>
-              <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))", gap:20}}>
-                <div>
-                  <div style={{fontSize:13, color:C.textMuted}}>Team Average Score</div>
-                  <div style={{fontSize:32, fontWeight:800, color:C.orange}}>{teamStats.avgScore}</div>
-                  <div style={{fontSize:13}}>out of 3.0</div>
-                </div>
-                <div>
-                  <div style={{fontSize:13, color:C.textMuted}}>Strong Virtues</div>
-                  <div style={{fontSize:32, fontWeight:800, color: teamStats.strongPercent > 70 ? C.green : C.orange}}>{teamStats.strongPercent}%</div>
-                </div>
-                <div>
-                  <div style={{fontSize:13, color:C.textMuted}}>Athletes Tracked</div>
-                  <div style={{fontSize:32, fontWeight:800}}>{teamStats.totalAthletes}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:28}}>
-            <h1 style={{fontSize:28, fontWeight:800}}>My Athletes</h1>
-            <button onClick={()=>setEditing(BLANK_ATHLETE)} style={{background:C.orange, color:"#fff", border:"none", padding:"12px 28px", borderRadius:12, fontWeight:700}}>＋ Add Athlete</button>
-          </div>
-
-          {athletes.length === 0 ? (
-            <div style={{textAlign:"center", padding:"120px 20px", color:"#666"}}>
-              <div style={{fontSize:80}}>⚽️🏀🏈</div>
-              <div style={{fontSize:24, margin:"20px 0"}}>Start building your team’s character</div>
-              <button onClick={()=>setEditing(BLANK_ATHLETE)} style={{background:C.orange, color:"#fff", padding:"14px 36px", borderRadius:12, fontSize:17, fontWeight:700}}>Add Your First Athlete</button>
-            </div>
-          ) : (
-            <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(310px, 1fr))", gap:20}}>
-              {athletes.map(p => {
-                const combo = getCombo(p.scores);
-                return (
-                  <div key={p.id} style={{background:"#fff", border:`1px solid ${C.border}`, borderRadius:16, padding:22, boxShadow:"0 6px 20px rgba(0,0,0,0.07)", position:"relative"}}>
-                    <button 
-                      onClick={(e)=>{e.stopPropagation(); setDeleteConfirm(p);}} 
-                      className="delete-btn" 
-                      style={{position:"absolute", top:12, right:12}}
-                    >
-                      🗑
-                    </button>
-                    
-                    <div onClick={()=>setViewing(p)} style={{cursor:"pointer"}}>
-                      <div style={{fontSize:22, fontWeight:800, marginBottom:8}}>{p.name}</div>
-                      {p.role && <div style={{color:C.textSub, marginBottom:12}}>{p.role}</div>}
-                      
-                      <div style={{display:"flex", gap:8, flexWrap:"wrap", marginBottom:16}}>
-                        {Object.entries(p.scores).map(([k,v]) => (
-                          <div key={k} style={{background:VIRTUES[k].bg, padding:"6px 10px", borderRadius:8, fontSize:14}}>{VIRTUES[k].icon} {v}</div>
-                        ))}
-                      </div>
-
-                      <div style={{marginBottom:12}}>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{width: `${combo.progress}%`, background: combo.progress > 80 ? "linear-gradient(90deg,#00b36b,#34d399)" : combo.progress > 50 ? "linear-gradient(90deg,#ff8c00,#ffaa00)" : "#dc3545"}} />
-                        </div>
-                      </div>
-
-                      <div style={{fontSize:13, color:C.textMuted}}>Last updated: {p.lastUpdated ? new Date(p.lastUpdated).toLocaleDateString() : "Never"}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {tab === "playbook" && (
-        <div style={{padding:24, maxWidth:820, margin:"0 auto"}}>
-          <h2 style={{color:C.orange, marginBottom:8}}>The Seven Virtues</h2>
-          <p style={{color:C.textSub, marginBottom:32}}>Fruit of the Spirit applied to youth sports.</p>
-          {Object.values(VIRTUES).map(t => (
-            <div key={t.key} style={{marginBottom:24, background:"#fff", border:`1px solid ${t.border}`, borderRadius:16, padding:24}}>
-              <div style={{display:"flex", alignItems:"center", gap:16}}>
-                <span style={{fontSize:48}}>{t.icon}</span>
-                <div>
-                  <div style={{fontSize:22, fontWeight:800, color:t.color}}>{t.label}</div>
-                  <div style={{color:C.textSub}}>"{t.tagline}"</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {editing && <EditModal person={editing} onSave={saveAthlete} onClose={()=>setEditing(null)} />}
-      {viewing && <PersonDetail person={viewing} onClose={()=>setViewing(null)} onEdit={p=>{setViewing(null); setEditing(p);}} />}
-      {deleteConfirm && <ConfirmDelete name={deleteConfirm.name} onConfirm={()=>deleteAthlete(deleteConfirm.id)} onCancel={()=>setDeleteConfirm(null)} />}
-    </div>
-  );
+  const mc=document.getElementById('matchCount');
+  mc.textContent=q?(total===0?'No matches':`${total} match${total!==1?'es':''}`):'';
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(React.createElement(App));
+function toggleAcc(h){h.closest('.accordion').classList.toggle('open');}
+
+let marks=[],cur=-1;
+const prevBtn=document.getElementById('prevBtn');
+const nextBtn=document.getElementById('nextBtn');
+function gather(){marks=Array.from(document.querySelectorAll('.accordion.open mark'));cur=marks.length?0:-1;nav();}
+function nav(){prevBtn.disabled=!marks.length||cur<=0;nextBtn.disabled=!marks.length||cur>=marks.length-1;}
+function focusMark(i){
+  document.querySelectorAll('.current-match').forEach(m=>m.classList.remove('current-match'));
+  if(i<0||i>=marks.length)return;
+  cur=i;const m=marks[i];m.classList.add('current-match');
+  const acc=m.closest('.accordion');if(acc&&!acc.classList.contains('open'))acc.classList.add('open');
+  m.scrollIntoView({behavior:'smooth',block:'center'});nav();
+  document.getElementById('matchCount').textContent=`${i+1} / ${marks.length}`;
+}
+prevBtn.addEventListener('click',()=>focusMark(cur-1));
+nextBtn.addEventListener('click',()=>focusMark(cur+1));
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  document.getElementById('searchInput').value='';
+  render('');marks=[];cur=-1;prevBtn.disabled=true;nextBtn.disabled=true;
+  document.getElementById('matchCount').textContent='';
+});
+let tmr;
+document.getElementById('searchInput').addEventListener('input',e=>{
+  clearTimeout(tmr);
+  tmr=setTimeout(()=>{
+    const q=e.target.value.trim();render(q);
+    if(q){setTimeout(()=>{gather();if(marks.length)focusMark(0);},30);}
+    else{marks=[];cur=-1;prevBtn.disabled=true;nextBtn.disabled=true;}
+  },150);
+});
+document.getElementById('searchInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.shiftKey?focusMark(cur-1):focusMark(cur+1);}
+  if(e.key==='Escape')document.getElementById('clearBtn').click();
+});
+document.getElementById('expandAll').addEventListener('click',()=>document.querySelectorAll('.accordion').forEach(a=>a.classList.add('open')));
+document.getElementById('collapseAll').addEventListener('click',()=>{
+  document.querySelectorAll('.accordion').forEach(a=>a.classList.remove('open'));marks=[];cur=-1;nav();
+});
+render('');
 </script>
 </body>
 </html>
