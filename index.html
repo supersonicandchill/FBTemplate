@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,6 +43,26 @@
   /* EDIT MODE BANNER */
   .edit-banner{display:none;background:rgba(26,127,191,.15);border:1.5px solid var(--edit-border);border-radius:6px;padding:8px 14px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--edit-border);letter-spacing:.5px;}
   .edit-banner.show{display:block;}
+
+  /* EXPORT / IMPORT */
+  .tool-btn.export{border-color:#2ea043;color:#2ea043;}
+  .tool-btn.export:hover{background:rgba(46,160,67,.1);}
+  .tool-btn.import-btn{border-color:#bc8cff;color:#bc8cff;}
+  .tool-btn.import-btn:hover{background:rgba(188,140,255,.1);}
+  #importFile{display:none;}
+
+  /* DISCLAIMER MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#1c2330;border:1.5px solid var(--accent);border-radius:10px;padding:24px;max-width:420px;width:100%;font-family:'Barlow Condensed',sans-serif;}
+  .modal h2{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:20px;color:var(--accent);margin-bottom:12px;letter-spacing:1px;}
+  .modal p{font-size:15px;color:var(--text);line-height:1.5;margin-bottom:10px;}
+  .modal .warn{color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.6;background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.3);border-radius:6px;padding:10px 12px;margin-bottom:16px;}
+  .modal-btns{display:flex;gap:10px;flex-wrap:wrap;}
+  .modal-btn{flex:1;min-width:120px;padding:10px 14px;border-radius:6px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;cursor:pointer;border:none;transition:opacity .15s;}
+  .modal-btn.confirm{background:var(--accent);color:#fff;}
+  .modal-btn.cancel{background:var(--surface2);color:var(--muted);border:1.5px solid var(--border);}
+  .modal-btn:hover{opacity:.85;}
 
   main{padding:12px;max-width:900px;margin:0 auto;}
 
@@ -134,9 +155,34 @@
     <button class="tool-btn" id="expandAll">Expand All</button>
     <button class="tool-btn" id="collapseAll">Collapse All</button>
     <button class="tool-btn" id="editToggle">✏️ Edit</button>
+    <button class="tool-btn export" id="exportBtn">⬇ Export</button>
+    <button class="tool-btn import-btn" id="importBtn">⬆ Import</button>
+    <input type="file" id="importFile" accept=".json">
   </div>
   <div class="edit-banner" id="editBanner">EDIT MODE · Tap any call sign, zone label, or subtitle to change it · Changes save automatically</div>
 </header>
+
+<div class="modal-overlay" id="disclaimerModal">
+  <div class="modal">
+    <h2>⚠️ OPERATIONAL DISCLAIMER</h2>
+    <p>This tool is a <strong>quick-reference aid only</strong> and is not a substitute for official dispatch systems, CAD, or department-issued radio programming.</p>
+    <div class="warn">· Always verify frequencies with your dispatch center<br>· Channel assignments may change without notice<br>· Do not rely solely on this app during active incidents<br>· Export your data regularly to prevent loss<br>· localStorage is browser-specific — use Export/Import to sync across devices</div>
+    <p style="font-size:13px;color:var(--muted);margin-top:8px;">Shown once. Tap Continue to proceed.</p>
+    <div class="modal-btns" style="margin-top:14px;"><button class="modal-btn confirm" id="disclaimerOk">Continue</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <h2>⬆ Import Data</h2>
+    <p>This will <strong>replace all current data</strong> with the imported file. Your existing edits will be overwritten.</p>
+    <div class="warn">Export a backup first if you want to keep your current data.</div>
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="modal-btn confirm" id="importConfirm">Replace &amp; Import</button>
+      <button class="modal-btn cancel" id="importCancel">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <div id="mainWrap">
   <main id="main"></main>
@@ -457,6 +503,67 @@ document.getElementById('searchInput').addEventListener('keydown',e=>{
 document.getElementById('expandAll').addEventListener('click',()=>document.querySelectorAll('.accordion').forEach(a=>a.classList.add('open')));
 document.getElementById('collapseAll').addEventListener('click',()=>{
   document.querySelectorAll('.accordion').forEach(a=>a.classList.remove('open'));marks=[];cur=-1;nav();
+});
+
+// ── EXPORT ───────────────────────────────────────
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `fairborn_radio_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ── IMPORT ───────────────────────────────────────
+let pendingImportData = null;
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  pendingImportData = null;
+  document.getElementById('importFile').value = '';
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      if (!parsed.zones || !parsed.data) throw new Error('Invalid format');
+      pendingImportData = parsed;
+      document.getElementById('importModal').classList.add('show');
+    } catch(err) {
+      alert('Invalid file. Please select a valid Fairborn Radio export (.json).');
+    }
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('importConfirm').addEventListener('click', () => {
+  if (!pendingImportData) return;
+  state = pendingImportData;
+  save();
+  document.getElementById('importModal').classList.remove('show');
+  render(document.getElementById('searchInput').value.trim());
+  pendingImportData = null;
+});
+
+document.getElementById('importCancel').addEventListener('click', () => {
+  document.getElementById('importModal').classList.remove('show');
+  pendingImportData = null;
+});
+
+// ── DISCLAIMER (shown once) ───────────────────────
+const DISC_KEY = 'fbf_disclaimer_seen';
+if (!localStorage.getItem(DISC_KEY)) {
+  document.getElementById('disclaimerModal').classList.add('show');
+}
+document.getElementById('disclaimerOk').addEventListener('click', () => {
+  localStorage.setItem(DISC_KEY, '1');
+  document.getElementById('disclaimerModal').classList.remove('show');
 });
 
 render('');
